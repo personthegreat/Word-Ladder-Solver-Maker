@@ -1,22 +1,54 @@
-// WordLadderSolver.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
 #include <iostream>
+#include <map>
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
+#include <fstream>
+using namespace std;
 
 int main()
 {
-    std::cout << "Zach #1!\n";
-    std::cout << "no World!\n";
-    std::cout << "Eric fell asleep\n";
+    cout << "Loading..." << endl;
+    ifstream in("WordsByLength.txt");
+    unordered_map<int, unordered_set<string>> database;
+    while (!in.eof())
+    {
+        string temp;
+        in >> temp;
+        int length = temp.length();
+        if (database.find(length) == database.end())
+        {
+            unordered_set<string> n;
+            n.insert(temp);
+            database[length] = n;
+        }
+        else
+        {
+            database[length].insert(temp);
+        }
+    }
+
+    string begin;
+    string end;
+    do 
+    {
+        cout << "enter first word: ";
+        cin >> begin;
+    } while (database.find(begin.length()) == database.end() || database[begin.length()].find(begin) == database[begin.length()].end());
+
+    do
+    {
+        cout << "enter second word: ";
+        cin >> end;
+    } while (database.find(end.length()) == database.end() || database[end.length()].find(end) == database[end.length()].end() || begin.length() != end.length());
+
+    int length = begin.length();
+    unordered_set<string> words = database[length];
+    
+    class graph
+    {
+
+    };
+    return 0;
 }
 
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
