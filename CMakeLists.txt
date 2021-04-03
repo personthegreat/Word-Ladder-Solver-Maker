@@ -3,6 +3,6 @@ project(Final)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(WordSolver main.cpp "header.h")
+add_executable(WordSolver main.cpp)
 
 file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/WordsByLength.txt" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
