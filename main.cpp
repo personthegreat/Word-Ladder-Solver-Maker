@@ -95,6 +95,7 @@ int BFS(const graph &graph, string begin, string end,vector<string> &path)
             path.push_back(current);
             current=paths[current];
         }
+        path.push_back(current);
     return paths.size();
 }
 int main()
@@ -120,7 +121,6 @@ int main()
             database[length].insert(temp);
         }
     }
-
     string begin;
     string end;
     do 
@@ -144,7 +144,10 @@ int main()
     vector<string> tester;
     int numVisited = BFS(test,begin,end,tester);
     for(auto it = tester.rbegin(); it!=tester.rend();it++)
-        cout<<*it<<"->";
+        if(it+1==tester.rend())
+            cout<<*it<<endl;
+        else
+            cout<<*it<<"->";
     cout<<numVisited<<endl;
     return 0;
 }
