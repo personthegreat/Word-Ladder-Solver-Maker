@@ -4,8 +4,99 @@
 #include <unordered_set>
 #include <vector>
 #include <fstream>
-using namespace std;
+#include <queue>
 
+using namespace std;
+class graph
+{
+    //stores from ambiguous word to words. h*t to hat and hot and hut
+    unordered_map<string, unordered_set<string>> findWords;
+    int numOfWords;
+public:
+    graph(unordered_set<string> words,int size)
+    {
+        numOfWords=size;
+        for (auto iter = words.begin(); iter != words.end(); ++iter)
+        {
+            string cur = *iter;
+            for (int i = 0; i < cur.length(); ++i)
+            {
+                string insert = cur.substr(0, i) + "*" + cur.substr(1 + i, cur.length() - i - 1);
+                //inserts this particular combo into findWords
+                if (findWords.find(insert) == findWords.end())
+                {
+                    unordered_set<string> temp;
+                    temp.insert(cur);
+                    findWords[insert] = temp;
+                }
+                else
+                {
+                    findWords[insert].insert(cur);
+                }
+            }
+        }
+    }
+    void test()
+    {
+        for (auto iter = findWords.begin(); iter != findWords.end(); ++iter)
+        {
+            cout << iter->first << ": ";
+            for (auto jter = iter->second.begin(); jter != iter->second.end(); ++jter)
+            {
+                cout << *jter << ", ";
+            }
+            cout << endl;
+        }
+    }
+    unordered_set<string> getList(string access) const
+    {
+        if(findWords.find(access)==findWords.end())
+            return unordered_set<string>();
+        return findWords.at(access);
+    }
+};
+int BFS(const graph &graph, string begin, string end,vector<string> &path)
+{
+    if(begin==end)
+    {
+        path.push_back(begin);
+        path.push_back(end);
+        return 0;
+    }
+    unordered_map<string,string> paths;
+    queue<string> words;
+    words.push(begin);
+    paths.insert({begin,""});
+    string current="";
+    while(current!=end&&!words.empty())
+    {
+        current=words.front();
+        words.pop();
+        for(unsigned int i =0; i<current.length();++i)
+        {
+            string temp=current;
+            temp[i]='*';
+            unordered_set<string> list = graph.getList(temp);
+            for(auto it=list.begin();it!=list.end();++it)
+            {
+                if(paths.find(*it)==paths.end())
+                {
+                    paths.insert({*it, current});
+                    words.push(*it);
+                }
+            }
+        }
+    }
+    if(current!=end)
+        cout<<"There is no word ladder from "<<begin<<" to "<<end<<endl;
+    else
+        while(current!=begin)
+        {
+            path.push_back(current);
+            current=paths[current];
+        }
+    return paths.size();
+}
 int main()
 {
     cout << "Loading..." << endl;
@@ -49,50 +140,12 @@ int main()
     int length = begin.length();
     //gets all the words of a certain length
     unordered_set<string> words = database[length];
-    
-    class graph
-    {
-        //stores from ambiguous word to words. h*t to hat and hot and hut
-        unordered_map<string, unordered_set<string>> findWords;
-    public:
-        graph(unordered_set<string> words)
-        {
-            for (auto iter = words.begin(); iter != words.end(); ++iter)
-            {
-                string cur = *iter;
-                for (int i = 0; i < cur.length(); ++i)
-                {
-                    string insert = cur.substr(0, i) + "*" + cur.substr(1 + i, cur.length() - i - 1);
-                    //inserts this particular combo into findWords
-                    if (findWords.find(insert) == findWords.end())
-                    {
-                        unordered_set<string> temp;
-                        temp.insert(cur);
-                        findWords[insert] = temp;
-                    }
-                    else
-                    {
-                        findWords[insert].insert(cur);
-                    }
-                }
-            }
-        }
-        void test()
-        {
-            for (auto iter = findWords.begin(); iter != findWords.end(); ++iter)
-            {
-                cout << iter->first << ": ";
-                for (auto jter = iter->second.begin(); jter != iter->second.end(); ++jter)
-                {
-                    cout << *jter << ", ";
-                }
-                cout << endl;
-            }
-        }
-    };
-    graph test(words);
-    test.test();
-
+    graph test(words,words.size());
+    vector<string> tester;
+    int numVisited = BFS(test,begin,end,tester);
+    for(auto it = tester.rbegin(); it!=tester.rend();it++)
+        cout<<*it<<"->";
+    cout<<numVisited<<endl;
     return 0;
 }
 
