@@ -5,7 +5,7 @@
 #include <vector>
 #include <fstream>
 #include <queue>
-
+#include<chrono>
 using namespace std;
 class graph
 {
@@ -63,6 +63,7 @@ int BFS(const graph &graph, string begin, string end,vector<string> &path)
         path.push_back(end);
         return 0;
     }
+    int visitedCount=1;
     unordered_map<string,string> paths;
     queue<string> words;
     words.push(begin);
@@ -84,6 +85,7 @@ int BFS(const graph &graph, string begin, string end,vector<string> &path)
                     paths.insert({*it, current});
                     words.push(*it);
                 }
+                ++visitedCount;
             }
         }
     }
@@ -96,7 +98,7 @@ int BFS(const graph &graph, string begin, string end,vector<string> &path)
             current=paths[current];
         }
         path.push_back(current);
-    return paths.size();
+    return visitedCount;
 }
 int main()
 {
@@ -142,13 +144,19 @@ int main()
     unordered_set<string> words = database[length];
     graph test(words,words.size());
     vector<string> tester;
+    const auto start = chrono::steady_clock::now();
     int numVisited = BFS(test,begin,end,tester);
+    const auto difference = chrono::steady_clock::now()-start;
+    auto duration = chrono::duration_cast<std::chrono::microseconds>(difference);
+    cout<<"Execution time of solving the word ladder: "<<duration.count()<< " Microseconds"<<endl;
+    cout<<"Shortest size of ladder: "<<tester.size()<<endl;
+    cout<<"Word Ladder: ";
     for(auto it = tester.rbegin(); it!=tester.rend();it++)
         if(it+1==tester.rend())
             cout<<*it<<endl;
         else
             cout<<*it<<"->";
-    cout<<numVisited<<endl;
+    cout<<"Number of nodes visited: "<<numVisited<<endl;
     return 0;
 }
 
