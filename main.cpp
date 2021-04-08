@@ -55,13 +55,12 @@ public:
         return findWords.at(access);
     }
 };
-int BFS(const graph &graph, string begin, string end,vector<string> &path)
+string BFS(const graph &graph, string begin, string end,int &visited)
 {
+    vector<string> path;
     if(begin==end)
     {
-        path.push_back(begin);
-        path.push_back(end);
-        return 0;
+        return begin+", "+end;
     }
     int visitedCount=1;
     unordered_map<string,string> paths;
@@ -89,20 +88,28 @@ int BFS(const graph &graph, string begin, string end,vector<string> &path)
             }
         }
     }
+    string cheese = "";
     if(current!=end)
         cout<<"There is no word ladder from "<<begin<<" to "<<end<<endl;
     else
-        while(current!=begin)
-        {
+    {
+        while (current != begin) {
             path.push_back(current);
-            current=paths[current];
+            current = paths[current];
         }
-        path.push_back(current);
-    return visitedCount;
+        path.push_back(begin);
+        for (auto it = path.rbegin(); it != path.rend(); ++it) {
+            if (it + 1 == path.rend())
+                cheese += *it;
+            else
+                cheese += *it + ",";
+        }
+    }
+    visited = visitedCount;
+    return cheese;
 }
 int main()
 {
-    cout << "Loading..." << endl;
     ifstream in("WordsByLength.txt");
     unordered_map<int, unordered_set<string>> database;
 
@@ -145,9 +152,10 @@ int main()
     graph test(words,words.size());
     vector<string> tester;
     const auto start = chrono::steady_clock::now();
-    int numVisited = BFS(test,begin,end,tester);
+    int numVisited;
+    string answer=BFS(test,begin,end,numVisited);
     const auto difference = chrono::steady_clock::now()-start;
-    auto duration = chrono::duration_cast<std::chrono::microseconds>(difference);
+    auto duration = chrono::duration_cast<std::chrono::nanoseconds>(difference);
     cout<<"Execution time of solving the word ladder: "<<duration.count()<< " Microseconds"<<endl;
     cout<<"Shortest size of ladder: "<<tester.size()<<endl;
     cout<<"Word Ladder: ";
