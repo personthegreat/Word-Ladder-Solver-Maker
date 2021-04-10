@@ -108,8 +108,107 @@ string BFS(const graph &graph, string begin, string end,int &visited)
     visited = visitedCount;
     return cheese;
 }
+string biBFS(const graph &graph, string begin, string end,int &visited)
+{
+    string cheese="";
+    unordered_map<string,string> forward_v;
+    unordered_map<string,string> backward_v;
+    queue<string> forward_q;
+    queue<string> backward_q;
+    vector<string> f_path;
+    vector<string> b_path;
+    if(begin==end)
+    {
+        return begin+", "+end;
+    }
+    int visitedCount=1;
+    forward_q.push(begin);
+    backward_q.push(end);
+    string intersect="";
+    string front="";
+    string backward="";
+    while(!forward_q.empty()&&!backward_q.empty())
+    {
+        front = forward_q.front();
+        forward_q.pop();
+        backward = backward_q.front();
+        backward_q.pop();
+        for(unsigned int i =0; i<front.length();++i)
+        {
+            string temp=front;
+            temp[i]='*';
+            unordered_set<string> list = graph.getList(temp);
+            for(auto it=list.begin();it!=list.end();++it)
+            {
+                if(forward_v.find(*it)==forward_v.end())
+                {
+                    forward_v.insert({*it, front});
+                    forward_q.push(*it);
+                }
+                ++visitedCount;
+            }
+        }
+        for(unsigned int i =0; i<backward.length();++i)
+        {
+            string temp=backward;
+            temp[i]='*';
+            unordered_set<string> list = graph.getList(temp);
+            for(auto it=list.begin();it!=list.end();++it)
+            {
+                if(backward_v.find(*it)==backward_v.end())
+                {
+                    backward_v.insert({*it, front});
+                    backward_q.push(*it);
+                }
+                ++visitedCount;
+            }
+        }
+        for(auto it = forward_v.begin(); it!=forward_v.end(); ++it)
+            for(auto it2 = backward_v.begin(); it2!=backward_v.end();++it2)
+                if(it->first==it2->first)
+                {
+                    intersect = it->first;
+                    break;
+                }
+        if(!intersect.empty())
+            break;
+    }
+    if(intersect.empty())
+        cout<<"There is no word ladder from "<<begin<<" to "<<end<<endl;
+    else
+    {
+        front = intersect;
+        f_path.push_back(intersect);
+        front = forward_v[front];
+        while (front != begin) {
+            f_path.push_back(front);
+            front = forward_v[front];
+        }
+        f_path.push_back(begin);
+        backward = backward_v[intersect];
+        b_path.push_back(backward);
+        backward = backward_v[intersect];
+        while (backward != end) {
+            b_path.push_back(backward);
+            backward = forward_v[backward];
+        }
+        b_path.push_back(end);
+        for(auto it = f_path.begin(); it!=f_path.end(); ++it)
+            cheese+= *it+", ";
+        for(auto it = b_path.rbegin(); it!=b_path.rend(); ++it)
+        {
+            if(it+1==b_path.rend())
+                cheese+=*it;
+            else
+                cheese=*it+", ";
+        }
+    }
+    visited=visitedCount;
+    return cheese;
+}
 int main()
 {
+    auto start = chrono::steady_clock::now();
     ifstream in("WordsByLength.txt");
     unordered_map<int, unordered_set<string>> database;
 
@@ -130,6 +229,9 @@ int main()
             database[length].insert(temp);
         }
     }
+    auto difference = chrono::steady_clock::now()-start;
+    auto duration = chrono::duration_cast<std::chrono::milliseconds>(difference);
+    cout<<duration.count()<<endl;
     string begin;
     string end;
     do 
@@ -151,19 +253,13 @@ int main()
     unordered_set<string> words = database[length];
     graph test(words,words.size());
     vector<string> tester;
-    const auto start = chrono::steady_clock::now();
+    start = chrono::steady_clock::now();
     int numVisited;
-    string answer=BFS(test,begin,end,numVisited);
-    const auto difference = chrono::steady_clock::now()-start;
-    auto duration = chrono::duration_cast<std::chrono::nanoseconds>(difference);
-    cout<<"Execution time of solving the word ladder: "<<duration.count()<< " Microseconds"<<endl;
-    cout<<"Shortest size of ladder: "<<tester.size()<<endl;
-    cout<<"Word Ladder: ";
-    for(auto it = tester.rbegin(); it!=tester.rend();it++)
-        if(it+1==tester.rend())
-            cout<<*it<<endl;
-        else
-            cout<<*it<<"->";
+    string answer=biBFS(test,begin,end,numVisited);
+    difference = chrono::steady_clock::now()-start;
+    duration = chrono::duration_cast<std::chrono::milliseconds>(difference);
+    cout<<"Execution time of solving the word ladder: "<<duration.count()<< " Milliseconds"<<endl;
+    cout<<"Word Ladder: "<<answer<<endl;
     cout<<"Number of nodes visited: "<<numVisited<<endl;
     return 0;
 }
