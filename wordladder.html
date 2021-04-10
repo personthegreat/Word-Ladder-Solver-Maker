@@ -132,8 +132,13 @@ html
         function checkWordLengths()
         {
             
-            let word1 = document.getElementById("wordForm").elements[0].value;
-            let word2 = document.getElementById("wordForm").elements[1].value;
+            let word1 = (document.getElementById("wordForm").elements[0].value);
+            let word2 = (document.getElementById("wordForm").elements[1].value);
+            word1 = word1.trim();
+            word2 = word2.trim();
+            word1 = word1.toLowerCase();
+            word2 = word2.toLowerCase();
+
             if(word1.length != word2.length)
             {
                 alert("The word lengths do not match! Please try again.");
@@ -165,9 +170,18 @@ html
                     }
                     else
                     {
-                        produceResult();
-                        document.getElementById("load").style.display = "none";
-                        replaceFrame("frame2","frame4");
+                        let xhttp = new XMLHttpRequest();
+                        xhttp.onreadystatechange = function() 
+                        {
+                            if (this.readyState == 4 && this.status == 200)
+                            { 
+                                document.getElementById("results").innerHTML = this.responseText;
+                                document.getElementById("load").style.display = "none";
+                                replaceFrame("frame2","frame4");
+                            }
+                        };
+                        xhttp.open("GET","http://localhost/wordladder_helper/wordladder_helper.cgi?functionName=searchStuff&parameters="+word1+"&"+word2);
+                        xhttp.send();        
                         return;
                     }
                     
@@ -177,20 +191,7 @@ html
             xhttp.open("GET","http://localhost/wordladder_helper/wordladder_helper.cgi?functionName=checkValidity&parameters="+word1+"&"+word2);
             xhttp.send();        
             return;
-            
-            
         };
-        function produceResult(start,end)
-        {
-            let xhttp = new XMLHttpRequest();
-            xhttp.onreadystatechange = function() 
-            {
-                document.getElementById("results").innerHTML = this.responseText;
-            };
-            xhttp.open("GET","http://localhost/wordladder_helper/wordladder_helper.cgi?functionName=searchStuff&parameters="+start+"&"+end);
-            xhttp.send();        
-
-        }
     </script>
     
 </html>
