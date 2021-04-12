@@ -222,7 +222,7 @@ string biBFS(const graph &graph, string begin, string end, int &visited)
     b_path.push_back(end);
 
     for (auto it = f_path.rbegin(); it != f_path.rend(); ++it)
-        cheese += *it + ", ";
+        cheese += *it + ",";
 
     //cout << cheese << endl;
     for(auto it = b_path.begin(); it != b_path.end(); ++it)
@@ -230,7 +230,7 @@ string biBFS(const graph &graph, string begin, string end, int &visited)
         if(it + 1 == b_path.end())
             cheese += *it;
         else
-            cheese += *it + ", ";
+            cheese += *it + ",";
     }
     //cout << cheese << endl;
     
