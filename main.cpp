@@ -86,10 +86,11 @@ string BFS(const graph &graph, string begin, string end, int &visited)
             {
                 if(paths.find(*it) == paths.end())
                 {
+                    ++visitedCount;
                     paths.insert({*it, current});
                     words.push(*it);
                 }
-                ++visitedCount;
+
             }
         }
     }
@@ -160,6 +161,7 @@ string biBFS(const graph &graph, string begin, string end, int &visited)
                     forward_v.insert({*it, front});
                     if (backward_v.find(*it) != backward_v.end()) //woah we found an intermediate
                     {
+
                         intersect = *it;
                         break;
                     }
@@ -181,6 +183,7 @@ string biBFS(const graph &graph, string begin, string end, int &visited)
                     backward_v.insert({*it, back});
                     if (forward_v.find(*it) != forward_v.end()) //woah we found an intermediate
                     {
+
                         intersect = *it;
                         break;
                     }
@@ -261,7 +264,7 @@ int main()
     }
 
     auto difference = chrono::steady_clock::now()-start;
-    auto duration = chrono::duration_cast<std::chrono::milliseconds>(difference);
+    auto duration = chrono::duration_cast<std::chrono::microseconds>(difference);
     cout << duration.count() << endl;
     string begin;
     string end;
@@ -284,18 +287,16 @@ int main()
     //gets all the words of a certain length
     unordered_set<string> words = database[length];
     graph test(words,words.size());
-    vector<string> tester;
-
     start = chrono::steady_clock::now();
     int numVisited;
 
-    string answer = biBFS(test,begin,end,numVisited); //actual call
+    string answer = BFS(test,begin,end,numVisited); //actual call
 
     difference = chrono::steady_clock::now() - start;
-    duration = chrono::duration_cast<std::chrono::milliseconds>(difference);
+    duration = chrono::duration_cast<std::chrono::microseconds>(difference);
     if(answer != "")
     {
-        cout << "Execution time of solving the word ladder: " << duration.count() << " Milliseconds" << endl;
+        cout << "Execution time of solving the word ladder: " << duration.count() << " Microseconds" << endl;
         cout << "Word Ladder: " << answer << endl;
         cout << "Number of nodes visited: " << numVisited << endl;
     }
