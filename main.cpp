@@ -61,7 +61,7 @@ string BFS(const graph &graph, string begin, string end, int &visited)
     vector<string> path;
     if(begin == end)
     {
-        return begin + ", " + end;
+        return begin + "," + end;
     }
 
     int visitedCount = 1;
@@ -161,7 +161,6 @@ string biBFS(const graph &graph, string begin, string end, int &visited)
                     forward_v.insert({*it, front});
                     if (backward_v.find(*it) != backward_v.end()) //woah we found an intermediate
                     {
-
                         intersect = *it;
                         break;
                     }
@@ -237,8 +236,6 @@ string biBFS(const graph &graph, string begin, string end, int &visited)
     visited = visitedCount;
     return cheese;
 }
-
-
 int main()
 {
     auto start = chrono::steady_clock::now();
