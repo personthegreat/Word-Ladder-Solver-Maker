@@ -37,18 +37,6 @@ public:
             }
         }
     }
-    void test()
-    {
-        for (auto iter = findWords.begin(); iter != findWords.end(); ++iter)
-        {
-            cout << iter->first << ": ";
-            for (auto jter = iter->second.begin(); jter != iter->second.end(); ++jter)
-            {
-                cout << *jter << ", ";
-            }
-            cout << endl;
-        }
-    }
     unordered_set<string> getList(string access) const
     {
         if(findWords.find(access)==findWords.end())
@@ -61,7 +49,9 @@ string BFS(const graph &graph, string begin, string end, int &visited)
     vector<string> path;
     if(begin == end)
     {
+        visited=0;
         return begin + "," + end;
+
     }
 
     int visitedCount = 1;
@@ -89,6 +79,12 @@ string BFS(const graph &graph, string begin, string end, int &visited)
                     ++visitedCount;
                     paths.insert({*it, current});
                     words.push(*it);
+                    if(*it==end)
+                    {
+                        current = end;
+                        break;
+                    }
+
                 }
 
             }
